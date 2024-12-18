@@ -3,6 +3,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 
+// Card component
 export const Card = React.memo(
   ({
     card,
@@ -10,7 +11,7 @@ export const Card = React.memo(
     hovered,
     setHovered,
   }: {
-    card: any;
+    card: Card; // Use the Card type here
     index: number;
     hovered: number | null;
     setHovered: React.Dispatch<React.SetStateAction<number | null>>;
@@ -45,11 +46,13 @@ export const Card = React.memo(
 
 Card.displayName = "Card";
 
+// Define the Card type
 type Card = {
   title: string;
   src: string;
 };
 
+// FocusCards component
 export function FocusCards({ cards }: { cards: Card[] }) {
   const [hovered, setHovered] = useState<number | null>(null);
 

@@ -1,8 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-
-let interval: any;
 
 type Card = {
   id: number;
@@ -23,14 +21,20 @@ export const CardStack = ({
   const CARD_OFFSET = offset || 10;
   const SCALE_FACTOR = scaleFactor || 0.06;
   const [cards, setCards] = useState<Card[]>(items);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null); // Use ref to store interval
 
   useEffect(() => {
     startFlipping();
 
-    return () => clearInterval(interval);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, []);
+
   const startFlipping = () => {
-    interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setCards((prevCards: Card[]) => {
         const newArray = [...prevCards]; // create a copy of the array
         newArray.unshift(newArray.pop()!); // move the last element to the front
@@ -40,12 +44,12 @@ export const CardStack = ({
   };
 
   return (
-    <div className="relative  h-60 w-60 md:h-60 md:w-96">
+    <div className="relative h-60 w-60 md:h-60 md:w-96">
       {cards.map((card, index) => {
         return (
           <motion.div
             key={card.id}
-            className="absolute dark:bg-black bg-white h-60 w-60 md:h-60 md:w-96 rounded-3xl p-4 shadow-xl border border-neutral-200 dark:border-white/[0.1]  shadow-black/[0.1] dark:shadow-white/[0.05] flex flex-col justify-between"
+            className="absolute dark:bg-black bg-white h-60 w-60 md:h-60 md:w-96 rounded-3xl p-4 shadow-xl border border-neutral-200 dark:border-white/[0.1] shadow-black/[0.1] dark:shadow-white/[0.05] flex flex-col justify-between"
             style={{
               transformOrigin: "top center",
               outline: "4px solid #FF2400",
@@ -53,7 +57,7 @@ export const CardStack = ({
             animate={{
               top: index * -CARD_OFFSET,
               scale: 1 - index * SCALE_FACTOR, // decrease scale for cards that are behind
-              zIndex: cards.length - index, //  decrease z-index for the cards that are behind
+              zIndex: cards.length - index, // decrease z-index for the cards that are behind
             }}
           >
             <div className="font-normal text-neutral-700 dark:text-neutral-200">
